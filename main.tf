@@ -21,7 +21,7 @@ data "ibm_schematics_state" "vpc" {
 
 
 resource "local_file" "terraform_source_state" {
-  filename = "${path.module}source.tfstate"
+  filename = "${path.module}schematics.tfstate"
   content  = data.ibm_schematics_state.vpc.state_store
 }
 
@@ -46,8 +46,11 @@ locals {
 }
 
 output "vpc_bastions" {
-  value = data.ibm_schematics_output.vpc.output_values["bastion_host_ip_addresses.#"]
+  value = data.ibm_schematics_output.vpc.output_values.bastion_host_ip_address
+}
 
+output "app_dns_hostname" {
+  value = data.ibm_schematics_output.vpc.output_values.app_dns_hostname
 }
 
 # output "file_read" {
@@ -56,26 +59,11 @@ output "vpc_bastions" {
 
 
 
-# resource "local_file" "ips" {
-#   filename = "${path.module}/ansible-data/inventory.txt"
-#   content  = local.inventory_file
-# }
+resource "local_file" "ips" {
+  filename = "${path.module}/ansible-data/inventory.txt"
+  content  = local.inventory_file
+}
 
-# data "local_file" "input" {
-#   filename   = "${path.module}/ansible-data/inventory.txt"
-#   depends_on = [local_file.ips]
-# }
-
-
-# resource "null_resource" "ls1" {
-#   triggers = {
-#     always_run = timestamp()
-#   }
-#   provisioner "local-exec" {
-#     command = "ls -al ${path.module}/ansible-data/inventory.txt"
-#   }
-#   depends_on = [local_file.ips]
-# }
 
 
 
